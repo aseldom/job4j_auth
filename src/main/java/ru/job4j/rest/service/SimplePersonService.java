@@ -53,4 +53,5 @@ public class SimplePersonService implements PersonService {
     public Collection<Person> findAll() {
         return personRepository.findAll();
     }
+
 }

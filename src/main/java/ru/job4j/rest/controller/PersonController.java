@@ -3,6 +3,7 @@ package ru.job4j.rest.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.rest.domain.Person;
 import ru.job4j.rest.service.PersonService;
@@ -16,15 +17,16 @@ import java.util.Optional;
 public class PersonController {
 
     private final PersonService personService;
+    private BCryptPasswordEncoder encoder;
 
     @GetMapping("/")
     public List<Person> findAll() {
-        return (List<Person>) this.personService.findAll();
+        return (List<Person>) personService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Person> findById(@PathVariable int id) {
-        var person = this.personService.findById(id);
+        var person = personService.findById(id);
         return new ResponseEntity<>(
                 person.orElse(new Person()),
                 person.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
@@ -53,5 +55,11 @@ public class PersonController {
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.notFound().build();
 
+    }
+
+    @PostMapping("/sign-up")
+    public void signUp(@RequestBody Person person) {
+        person.setPassword(encoder.encode(person.getPassword()));
+        personService.save(person);
     }
 }
