@@ -22,7 +22,7 @@ public class SimplePersonService implements PersonService {
         try {
             return Optional.of(personRepository.save(person));
         } catch (Exception e) {
-            LOGGER.error("Error save person: ", e);
+            LOGGER.error("Error save person: " + e.getMessage());
         }
         return Optional.empty();
     }
