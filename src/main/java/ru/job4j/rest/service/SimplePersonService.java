@@ -3,6 +3,7 @@ package ru.job4j.rest.service;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.job4j.rest.domain.Person;
 import ru.job4j.rest.repository.PersonRepository;
@@ -15,11 +16,13 @@ import java.util.Optional;
 public class SimplePersonService implements PersonService {
 
     final static Logger LOGGER = LoggerFactory.getLogger(SimplePersonService.class);
+    private BCryptPasswordEncoder encoder;
     private final PersonRepository personRepository;
 
     @Override
     public Optional<Person> save(Person person) {
         try {
+            person.setPassword(encoder.encode(person.getPassword()));
             return Optional.of(personRepository.save(person));
         } catch (Exception e) {
             LOGGER.error("Error save person: " + e.getMessage());
@@ -30,7 +33,7 @@ public class SimplePersonService implements PersonService {
     @Override
     public boolean update(Person person) {
         if (personRepository.existsById(person.getId())) {
-            return this.save(person).isPresent();
+            return save(person).isPresent();
         }
         return false;
     }

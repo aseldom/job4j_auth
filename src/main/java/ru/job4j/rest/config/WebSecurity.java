@@ -2,6 +2,7 @@ package ru.job4j.rest.config;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import ru.job4j.rest.service.UserDetailsServiceImpl;
 
 import static ru.job4j.rest.filter.JWTAuthenticationFilter.SIGN_UP_URL;
 
+@Configuration
 @AllArgsConstructor
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter  {
