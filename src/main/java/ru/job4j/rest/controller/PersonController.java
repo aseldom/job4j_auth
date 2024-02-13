@@ -2,19 +2,13 @@ package ru.job4j.rest.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMapAdapter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.rest.domain.Person;
 import ru.job4j.rest.service.PersonService;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -58,23 +52,6 @@ public class PersonController {
             return ResponseEntity.ok().build();
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Index is not found");
-    }
-
-    @GetMapping("/example1")
-    public ResponseEntity<byte[]> response1() throws IOException {
-        return ResponseEntity.status(201)
-                .header("header1", "headerValues")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(Files.readAllBytes(Path.of("d://test.pdf")));
-    }
-
-    @GetMapping("/example2")
-    public ResponseEntity<?> response2() {
-        return new ResponseEntity<>(
-                "body",
-                new MultiValueMapAdapter<>(Map.of("key1", List.of("listOf"))),
-                201
-        );
     }
 
     private void checkPerson(Person person) {
