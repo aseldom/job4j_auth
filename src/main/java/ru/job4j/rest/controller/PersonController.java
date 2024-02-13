@@ -9,6 +9,7 @@ import ru.job4j.rest.domain.Person;
 import ru.job4j.rest.dto.PersonDTO;
 import ru.job4j.rest.service.PersonService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -37,16 +38,14 @@ public class PersonController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
-        checkPerson(person);
+    public ResponseEntity<Person> create(@RequestBody @Valid Person person) {
         return personService.save(person)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 
     @PutMapping("")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
-        checkPerson(person);
+    public ResponseEntity<Void> update(@RequestBody @Valid Person person) {
         if (personService.update(person)) {
             return ResponseEntity.ok().build();
         }
@@ -62,7 +61,7 @@ public class PersonController {
     }
 
     @PatchMapping("")
-    public ResponseEntity<Person> update(@RequestBody PersonDTO personDTO) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Person> update(@RequestBody @Valid PersonDTO personDTO) throws InvocationTargetException, IllegalAccessException {
         Optional<Person> personOptional = personService.findById(personDTO.getId());
         if (personOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not correct");
@@ -86,12 +85,6 @@ public class PersonController {
         return Arrays.stream(object.getClass().getDeclaredMethods())
                 .filter(a -> a.getName().startsWith("get") || a.getName().startsWith("set"))
                 .collect(Collectors.toMap(Method::getName, a -> a));
-    }
-
-    private void checkPerson(Person person) {
-        if (person.getLogin().isEmpty() || person.getPassword().isEmpty()) {
-            throw new NullPointerException("The field is empty");
-        }
     }
 
 }
