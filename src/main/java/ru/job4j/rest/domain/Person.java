@@ -10,14 +10,12 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = {"login", "password"})
 public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @EqualsAndHashCode.Include
     private String login;
-    @EqualsAndHashCode.Include
     private String password;
 }
