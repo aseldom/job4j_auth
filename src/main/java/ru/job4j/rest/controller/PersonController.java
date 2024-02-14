@@ -6,17 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.rest.domain.Person;
-import ru.job4j.rest.dto.PersonDTO;
+import ru.job4j.rest.dto.PersonPasswordDTO;
 import ru.job4j.rest.service.PersonService;
 
 import javax.validation.Valid;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
@@ -61,30 +55,10 @@ public class PersonController {
     }
 
     @PatchMapping("")
-    public ResponseEntity<Person> update(@RequestBody @Valid PersonDTO personDTO) throws InvocationTargetException, IllegalAccessException {
-        Optional<Person> personOptional = personService.findById(personDTO.getId());
-        if (personOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not correct");
-        }
-        Person person = personOptional.get();
-        Map<String, Method> methodsPersonDTO = getMethods(personDTO);
-        Map<String, Method> methodsPerson = getMethods(person);
-        for (String methodName : methodsPerson.keySet()) {
-            if (methodName.startsWith("get") && methodsPersonDTO.containsKey(methodName)) {
-                Object newValue = methodsPersonDTO.get(methodName).invoke(personDTO);
-                if (newValue != null) {
-                    methodsPerson.get(methodName.replace("get", "set")).invoke(person, newValue);
-                }
-            }
-        }
-        personService.update(person);
-        return ResponseEntity.ok().body(person);
-    }
-
-    private Map<String, Method> getMethods(Object object) {
-        return Arrays.stream(object.getClass().getDeclaredMethods())
-                .filter(a -> a.getName().startsWith("get") || a.getName().startsWith("set"))
-                .collect(Collectors.toMap(Method::getName, a -> a));
+    public ResponseEntity<Person> changePassword(@RequestBody @Valid PersonPasswordDTO passwordDTO) {
+        return personService.updatePassword(passwordDTO).
+                map(p -> ResponseEntity.ok().body(p))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 
 }
